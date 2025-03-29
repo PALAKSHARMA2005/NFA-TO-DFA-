@@ -1,12 +1,13 @@
-document.getElementById('convert-btn').addEventListener('click', convertAndVisualize);
+document.getElementById('convert-to-dfa-btn').addEventListener('click', convertAndVisualizeNFAtoDFA);
+document.getElementById('convert-to-nfa-btn').addEventListener('click', convertAndVisualizeDFAtoNFA);
 
-function convertAndVisualize() {
+function convertAndVisualizeNFAtoDFA() {
   // Gather inputs
-  const statesInput = document.getElementById('states').value.trim();
-  const alphabetInput = document.getElementById('alphabet').value.trim();
-  const transitionsInput = document.getElementById('transitions').value.trim();
-  const startState = document.getElementById('start-state').value.trim();
-  const acceptStatesInput = document.getElementById('accept-states').value.trim();
+  const statesInput = document.getElementById('nfa-states').value.trim();
+  const alphabetInput = document.getElementById('nfa-alphabet').value.trim();
+  const transitionsInput = document.getElementById('nfa-transitions').value.trim();
+  const startState = document.getElementById('nfa-start-state').value.trim();
+  const acceptStatesInput = document.getElementById('nfa-accept-states').value.trim();
 
   // Validate inputs
   if (!statesInput || !alphabetInput || !transitionsInput || !startState || !acceptStatesInput) {
@@ -368,6 +369,105 @@ function minimizeDFA(dfa) {
   };
 }
 
+// Function to handle DFA to NFA conversion and visualization
+function convertAndVisualizeDFAtoNFA() {
+  // Gather inputs
+  const statesInput = document.getElementById('dfa-states').value.trim();
+  const alphabetInput = document.getElementById('dfa-alphabet').value.trim();
+  const transitionsInput = document.getElementById('dfa-transitions').value.trim();
+  const startState = document.getElementById('dfa-start-state').value.trim();
+  const acceptStatesInput = document.getElementById('dfa-accept-states').value.trim();
+
+  // Validate inputs
+  if (!statesInput || !alphabetInput || !transitionsInput || !startState || !acceptStatesInput) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
+  // Process inputs
+  const states = statesInput.split(',').map(s => s.trim());
+  const alphabet = alphabetInput.split(',').map(a => a.trim());
+  const acceptStates = acceptStatesInput.split(',').map(s => s.trim());
+
+  if (!states.includes(startState)) {
+    alert('Start state must be one of the defined states.');
+    return;
+  }
+
+  if (!acceptStates.every(s => states.includes(s))) {
+    alert('All accept states must be among the defined states.');
+    return;
+  }
+
+  // Build transitions object
+  const transitions = {};
+  let validTransitions = true;
+
+  transitionsInput.split('\n').forEach(line => {
+    const [fromState, symbol, toState] = line.trim().split(',');
+    if (!fromState || !symbol || !toState) return;
+    if (!states.includes(fromState) || !states.includes(toState)) validTransitions = false;
+    if (!alphabet.includes(symbol)) validTransitions = false;
+
+    if (!transitions[fromState]) transitions[fromState] = {};
+
+    if (!transitions[fromState][symbol]) transitions[fromState][symbol] = [];
+    transitions[fromState][symbol].push(toState);
+  });
+
+  if (!validTransitions) {
+    alert('Transitions contain undefined states or symbols.');
+    return;
+  }
+
+  const dfa = {
+    states,
+    alphabet,
+    transitions,
+    start_state: startState,
+    accept_states: acceptStates
+  };
+
+  // Visualize DFA
+  const dfaDot = generateDot(dfa, 'DFA');
+  renderGraph(dfaDot, 'dfa-graph');
+
+  // Begin DFA to NFA conversion logic
+  const nfa = dfaToNfa(dfa);
+  if (nfa) {
+    // Visualize NFA
+    const nfaDot = generateDot(nfa, 'NFA');
+    renderGraph(nfaDot, 'nfa-from-dfa-graph');
+  } else {
+    alert('Error converting DFA to NFA.');
+  }
+}
+
+function dfaToNfa(dfa) {
+  const { states, alphabet, transitions, start_state, accept_states } = dfa;
+  const nfaTransitions = {};
+
+  for (const [fromState, trans] of Object.entries(transitions)) {
+    for (const [symbol, toStates] of Object.entries(trans)) {
+      if (!nfaTransitions[fromState]) nfaTransitions[fromState] = {};
+      if (!nfaTransitions[fromState][symbol]) nfaTransitions[fromState][symbol] = [];
+      nfaTransitions[fromState][symbol].push(toStates);
+    }
+  }
+
+  const nfa = {
+    states,
+    alphabet,
+    transitions: nfaTransitions,
+    start_state,
+    accept_states
+  };
+
+  return nfa;
+}
+
 // Prefill transitions textarea with example transitions
-document.getElementById('transitions').value =
+document.getElementById('nfa-transitions').value =
   'q0,a,q0\nq0,a,q1\nq0,b,q0\nq1,a,q2\nq1,b,q2';
+document.getElementById('dfa-transitions').value =
+  'q0,a,q1\nq0,b,q0\nq1,a,q2\nq1,b,q2\nq2,a,q2\nq2,b,q2';
