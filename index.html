@@ -10,25 +10,25 @@
 </head>
 <body>
   <div id="container">
-    <h1>NFA to DFA Converter</h1>
+    <h1>NFA to DFA and DFA to NFA Converter</h1>
     <div class="section">
       <h2>Enter NFA Details</h2>
       <label for="states">States (comma-separated):</label>
-      <input type="text" id="states" value="q0,q1,q2">
+      <input type="text" id="nfa-states" value="q0,q1,q2">
 
       <label for="alphabet">Alphabet (comma-separated):</label>
-      <input type="text" id="alphabet" value="a,b">
+      <input type="text" id="nfa-alphabet" value="a,b">
 
       <label for="transitions">Transitions:</label>
-      <textarea id="transitions" placeholder="One transition per line (e.g., q0,a,q1)&#10;Use 'epsilon' for ε-transitions"></textarea>
+      <textarea id="nfa-transitions" placeholder="One transition per line (e.g., q0,a,q1)&#10;Use 'epsilon' for ε-transitions"></textarea>
 
       <label for="start-state">Start State:</label>
-      <input type="text" id="start-state" value="q0">
+      <input type="text" id="nfa-start-state" value="q0">
 
       <label for="accept-states">Accept States (comma-separated):</label>
-      <input type="text" id="accept-states" value="q2">
+      <input type="text" id="nfa-accept-states" value="q2">
 
-      <button id="convert-btn">Convert to DFA & Visualize</button>
+      <button id="convert-to-dfa-btn">Convert to DFA & Visualize</button>
     </div>
 
     <div class="section">
@@ -44,6 +44,31 @@
     <div class="section">
       <h2>DFA Visualization</h2>
       <div id="dfa-graph" class="graph-container"></div>
+    </div>
+    
+    <div class="section">
+      <h2>Enter DFA Details</h2>
+      <label for="dfa-states">States (comma-separated):</label>
+      <input type="text" id="dfa-states" value="q0,q1,q2">
+
+      <label for="dfa-alphabet">Alphabet (comma-separated):</label>
+      <input type="text" id="dfa-alphabet" value="a,b">
+
+      <label for="dfa-transitions">Transitions:</label>
+      <textarea id="dfa-transitions" placeholder="One transition per line (e.g., q0,a,q1)"></textarea>
+
+      <label for="dfa-start-state">Start State:</label>
+      <input type="text" id="dfa-start-state" value="q0">
+
+      <label for="dfa-accept-states">Accept States (comma-separated):</label>
+      <input type="text" id="dfa-accept-states" value="q2">
+
+      <button id="convert-to-nfa-btn">Convert to NFA & Visualize</button>
+    </div>
+
+    <div class="section">
+      <h2>NFA Visualization from DFA</h2>
+      <div id="nfa-from-dfa-graph" class="graph-container"></div>
     </div>
 
     <div class="footer">
